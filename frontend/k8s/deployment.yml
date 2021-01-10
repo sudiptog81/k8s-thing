@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: k8s-thing-frontend
+  name: k8s-thing-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k8s-thing-frontend
+  template:
+    metadata:
+      labels:
+        app: k8s-thing-frontend
+    spec:
+      containers:
+        - name: k8s-thing-frontend
+          image: k8s-thing-frontend:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: NODE_ENV
+              value: production
+          ports:
+            - containerPort: 3000
