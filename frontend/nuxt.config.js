@@ -36,7 +36,7 @@ export default {
     browserBaseURL:
       process.env.NODE_ENV === 'production'
         ? '/api/v1'
-        : 'http://localhost:5000',
+        : 'http://localhost:5000/api/v1',
   },
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
