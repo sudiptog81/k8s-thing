@@ -1,6 +1,6 @@
 # k8s-thing
 
-**TL;DR** Nuxt.js frontend exposed at `/` and Express.js API exposed at `/api/v1` backed by a k/v store.
+**TL;DR** Nuxt.js frontend exposed at `http://k8s-thing.k8s/` and Express.js API exposed at `http://k8s-thing.k8s/api/v1` backed by a Redis k/v store.
 
 ![image](.github/images/diagram.png)
 
@@ -41,24 +41,49 @@ k8s-thing-redis-password   Opaque                                1      2m28s
 ...
 ```
 
+## Quick Start
+
+Assuming you have configured the settings for your container registry and replaced a few things here and there.
+
+```bash
+make docker
+make push
+make deploy
+```
+
+## Configure /etc/hosts
+
+```plain
+<cluster-ip> k8s-thing.k8s
+```
+
 ## Build Images
 
 ```bash
-docker build -t k8s-thing-backend backend
-docker build -t k8s-thing-frontend frontend
+docker build -t ghcr.io/sudiptog81/k8s-thing-backend backend
+docker build -t ghcr.io/sudiptog81/k8s-thing-frontend frontend
 ```
 
-## Push to minikube (optional)
+## Push Images to GitHub CR
 
 ```bash
-docker save k8s-thing-backend | (eval $(minikube docker-env) && docker load)
-docker save k8s-thing-frontend | (eval $(minikube docker-env) && docker load)
+docker push ghcr.io/sudiptog81/k8s-thing-backend
+docker push ghcr.io/sudiptog81/k8s-thing-frontend
+```
+
+## Push Registry Credentials to Cluster
+
+```bash
+kubectl create secret generic regcred \
+  --from-file=.dockerconfigjson=.docker/config.json \
+  --type=kubernetes.io/dockerconfigjson
 ```
 
 ## Deploy on k8s
 
 ```bash
-kubectl create secret generic k8s-thing-redis-password --from-literal=k8s-thing-redis-password=password123
+kubectl create secret generic k8s-thing-redis-password \
+  --from-literal=k8s-thing-redis-password=password123
 kubectl apply -f cache/deployment.yml
 kubectl apply -f cache/service.yml
 kubectl apply -f backend/k8s/configmap.yml
@@ -72,6 +97,7 @@ kubectl apply -f k8s/ingress.yml
 ## Delete Deployment
 
 ```bash
+kubectl delete secret k8s-thing-redis-password
 kubectl delete deployment k8s-thing-backend
 kubectl delete deployment k8s-thing-frontend
 kubectl delete deployment k8s-thing-redis
@@ -80,5 +106,4 @@ kubectl delete service k8s-thing-backend-service
 kubectl delete service k8s-thing-frontend-service
 kubectl delete service k8s-thing-redis-service
 kubectl delete ingress k8s-thing-ingress
-kubectl delete secret k8s-thing-redis-password
 ```

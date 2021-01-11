@@ -14,10 +14,11 @@ spec:
       labels:
         app: k8s-thing-frontend
     spec:
+      imagePullSecrets:
+        - name: regcred
       containers:
         - name: k8s-thing-frontend
-          image: k8s-thing-frontend:latest
-          imagePullPolicy: IfNotPresent
+          image: ghcr.io/sudiptog81/k8s-thing-frontend:latest
           env:
             - name: NODE_ENV
               value: production

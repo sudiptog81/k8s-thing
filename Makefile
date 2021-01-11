@@ -1,10 +1,10 @@
 docker: 
-	docker build -t k8s-thing-backend backend
-	docker build -t k8s-thing-frontend frontend
+	docker build -t ghcr.io/sudiptog81/k8s-thing-backend backend
+	docker build -t ghcr.io/sudiptog81/k8s-thing-frontend frontend
 
-load: 
-	docker save k8s-thing-backend | (eval $(minikube docker-env) && docker load)
-	docker save k8s-thing-frontend | (eval $(minikube docker-env) && docker load)
+push:
+	docker push ghcr.io/sudiptog81/k8s-thing-backend
+	docker push ghcr.io/sudiptog81/k8s-thing-frontend
 
 deploy: 
 	kubectl create secret generic k8s-thing-redis-password --from-literal=k8s-thing-redis-password=password123
@@ -18,6 +18,7 @@ deploy:
 	kubectl apply -f k8s/ingress.yml
 
 delete: 
+	kubectl delete secret k8s-thing-redis-password
 	kubectl delete deployment k8s-thing-backend
 	kubectl delete deployment k8s-thing-frontend
 	kubectl delete deployment k8s-thing-redis
@@ -26,10 +27,8 @@ delete:
 	kubectl delete service k8s-thing-frontend-service
 	kubectl delete service k8s-thing-redis-service
 	kubectl delete ingress k8s-thing-ingress
-	kubectl delete secret k8s-thing-redis-password
 
 clean:
-	docker image prune
 	rm -rf backend/node_modules
 	rm -rf frontend/node_modules
 	rm -rf frontend/.nuxt

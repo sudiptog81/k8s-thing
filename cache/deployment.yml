@@ -1,6 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  labels:
+    app: k8s-thing-redis
   name: k8s-thing-redis
 spec:
   replicas: 1

@@ -1,10 +1,13 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
+  labels:
+    app: k8s-thing
   name: k8s-thing-ingress
 spec:
   rules:
-    - http:
+    - host: k8s-thing.k8s
+      http:
         paths:
           - path: /api/v1
             pathType: Prefix

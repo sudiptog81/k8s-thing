@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: k8s-thing-backend
   labels:
     app: k8s-thing-backend
+  name: k8s-thing-backend
 spec:
   replicas: 1
   selector:
@@ -14,10 +14,11 @@ spec:
       labels:
         app: k8s-thing-backend
     spec:
+      imagePullSecrets:
+        - name: regcred
       containers:
         - name: k8s-thing-backend
-          image: k8s-thing-backend:latest
-          imagePullPolicy: IfNotPresent
+          image: ghcr.io/sudiptog81/k8s-thing-backend:latest
           env:
             - name: REDIS_PASSWORD
               valueFrom:
